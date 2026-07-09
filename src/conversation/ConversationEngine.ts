@@ -12,11 +12,11 @@ export type ConversationResult = {
   messages: ConversationMessage[];
 };
 
-export function sendConversationMessage(
+export async function sendConversationMessage(
   flow: Flow,
   session: Session,
   input: string
-): ConversationResult {
+): Promise<ConversationResult> {
   const result = nextStep(flow, session, input);
 
   const messages: ConversationMessage[] = [
@@ -31,7 +31,10 @@ export function sendConversationMessage(
   ];
 
   if (result.pendingAction) {
-    const actionMessage = dispatchAction(result.pendingAction, result);
+    const actionMessage = await dispatchAction(
+      result.pendingAction,
+      result.answers
+    );
 
     messages.push({
       from: "bot",
